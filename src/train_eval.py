@@ -8,7 +8,7 @@ from utils import ensure_dir, parse_args
 
 from keras.applications.resnet50 import ResNet50
 from keras.layers import Dense, Flatten
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint, TensorBoard
 
@@ -17,18 +17,26 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 args = parse_args()
 dataset = BoxCarsDataset(load_split="hard", load_atlas=True)
 
-#%% construct the model (this can be changed to different net)
-base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224,224,3))
-x = base_model.output
-x = Flatten()(x)
-predictions = Dense(dataset.get_number_of_classes(), activation='softmax')(x)
-model = Model(input=base_model.input, output=predictions)
+#%% get optional path to load model
+model = None
+for path in [args.eval, args.resume]:
+    if path is not None:
+        print("Loading model from %s"%path)
+        model = load_model(path)
+        break
 
-#%% compile the model
-optimizer = SGD(lr=LEARNING_RATE, decay=1e-4, nesterov=True)
-model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy"])
+#%% construct the model as it was not passed as an argument
+if model is None:
+    print("Initializing new model...")
+    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224,224,3))
+    x = base_model.output
+    x = Flatten()(x)
+    predictions = Dense(dataset.get_number_of_classes(), activation='softmax')(x)
+    model = Model(input=base_model.input, output=predictions)
+    optimizer = SGD(lr=LEARNING_RATE, decay=1e-4, nesterov=True)
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy"])
 
-
+#%% training
 if args.eval is None:
     print("Training...")
     #%% initialize dataset for training
@@ -42,7 +50,13 @@ if args.eval is None:
     ensure_dir(OUTPUT_TENSORBOARD_DIR)
     ensure_dir(OUTPUT_SNAPSHOTS_DIR)
     tb_callback = TensorBoard(OUTPUT_TENSORBOARD_DIR, histogram_freq=1, write_graph=False, write_images=False)
-    saver_callback = ModelCheckpoint(os.path.join(OUTPUT_SNAPSHOTS_DIR, "weights.{epoch:02d}-{val_acc:.2f}.h5") )
+    saver_callback = ModelCheckpoint(os.path.join(OUTPUT_SNAPSHOTS_DIR, "model_{epoch:03d}_{val_acc:.2f}.h5") )
+
+    #%% get initial epoch
+    initial_epoch = 0
+    if args.resume is not None:
+        initial_epoch = int(os.path.basename(args.resume).split("_")[1]) + 1
+
 
     model.fit_generator(generator=generator_train, 
                         samples_per_epoch=generator_train.N,
@@ -51,19 +65,14 @@ if args.eval is None:
                         validation_data=generator_val,
                         nb_val_samples=generator_val.N,
                         callbacks=[tb_callback, saver_callback],
+                        initial_epoch = initial_epoch,
                         )
 
     #%% save trained data
     print("Saving the final model to %s"%(OUTPUT_FINAL_MODEL))
     ensure_dir(os.path.dirname(OUTPUT_FINAL_MODEL))
     model.save(OUTPUT_FINAL_MODEL)
-    print("Saving the final weights to %s"%(OUTPUT_FINAL_WEIGHTS))
-    ensure_dir(os.path.dirname(OUTPUT_FINAL_WEIGHTS))
-    model.save_weights(OUTPUT_FINAL_WEIGHTS)
 
-else:
-    print("Loading weights from %s"%args.eval)
-    model.load_weights(args.eval)
 
 #%% evaluate the model (accuracy only for one sample - per track accuracy needs to be implemented)
 print("Running evaluation...")

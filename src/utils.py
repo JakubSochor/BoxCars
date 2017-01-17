@@ -32,5 +32,9 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser(description="BoxCars fine-grained recognition algorithm Keras re-implementation",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--eval", type=str, default=None, help="path to weights file to be evaluated")
-    return parser.parse_args()
+    parser.add_argument("--eval", type=str, default=None, help="path to model file to be evaluated")
+    parser.add_argument("--resume", type=str, default=None, help="path to model file to be resumed")
+    
+    args = parser.parse_args()
+    assert args.eval is None or args.resume is None, "--eval and --resume are mutually exclusive"
+    return args

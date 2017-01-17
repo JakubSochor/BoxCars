@@ -35,7 +35,7 @@ class BoxCarsDataGenerator(Iterator):
                 flip = bool(random.getrandbits(1)) # random flip
                 image, bb3d = add_bb_noise_flip(image, bb3d, flip, bb_noise) 
             image = unpack_3DBB(image, bb3d) 
-            image = image.astype(np.float32) - 116
+            image = (image.astype(np.float32) - 116)/128.
             x[i, ...] = image
         if not self.generate_y:
             return x
