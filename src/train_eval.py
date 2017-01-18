@@ -46,7 +46,7 @@ if args.eval is None:
     generator_val = BoxCarsDataGenerator(dataset, "validation", BATCH_SIZE, training_mode=False)
 
 
-    #%% train
+    #%% 
     ensure_dir(OUTPUT_TENSORBOARD_DIR)
     ensure_dir(OUTPUT_SNAPSHOTS_DIR)
     tb_callback = TensorBoard(OUTPUT_TENSORBOARD_DIR, histogram_freq=1, write_graph=False, write_images=False)
@@ -60,7 +60,7 @@ if args.eval is None:
 
     model.fit_generator(generator=generator_train, 
                         samples_per_epoch=generator_train.N,
-                        nb_epoch=15,
+                        nb_epoch=25,
                         verbose=1,
                         validation_data=generator_val,
                         nb_val_samples=generator_val.N,
@@ -74,11 +74,11 @@ if args.eval is None:
     model.save(OUTPUT_FINAL_MODEL)
 
 
-#%% evaluate the model (accuracy only for one sample - per track accuracy needs to be implemented)
+#%% evaluate the model 
 print("Running evaluation...")
 dataset.initialize_data("test")
-generator_test = BoxCarsDataGenerator(dataset, "test", BATCH_SIZE, training_mode=False)
-eval_results = model.evaluate_generator(generator_test, generator_test.N)
-print("Evaluation done.")
-for metric_name, result in zip(model.metrics_names, eval_results):
-    print("%s: %.3f"%(metric_name, result))
+generator_test = BoxCarsDataGenerator(dataset, "test", BATCH_SIZE, training_mode=False, generate_y=False)
+predictions = model.predict_generator(generator_test, generator_test.N)
+single_acc, tracks_acc = dataset.evaluate(predictions)
+print("Accuracy: %.2f%%"%(single_acc*100))
+print("Track accuracy: %.2f%%"%(tracks_acc*100))
