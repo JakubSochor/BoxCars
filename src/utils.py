@@ -28,15 +28,18 @@ def ensure_dir(d):
                 raise e
 
 #%%
-def parse_args():
+def parse_args(available_nets):
     import argparse
     parser = argparse.ArgumentParser(description="BoxCars fine-grained recognition algorithm Keras re-implementation",
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--eval", type=str, default=None, help="path to model file to be evaluated")
     parser.add_argument("--resume", type=str, default=None, help="path to model file to be resumed")
+    parser.add_argument("--train-net", type=str, default=available_nets[0], help="train on one of following nets: %s"%(str(available_nets)))
     
     args = parser.parse_args()
     assert args.eval is None or args.resume is None, "--eval and --resume are mutually exclusive"
+    if args.eval is None and args.resume is None:
+        assert args.train_net in available_nets, "--train-net must be one of %s"%(str(available_nets))
     return args
 
  

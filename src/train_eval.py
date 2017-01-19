@@ -7,14 +7,16 @@ from config import *
 from utils import ensure_dir, parse_args
 
 from keras.applications.resnet50 import ResNet50
-from keras.layers import Dense, Flatten
+from keras.applications.vgg16 import VGG16
+from keras.applications.vgg19 import VGG19
+from keras.layers import Dense, Flatten, Dropout
 from keras.models import Model, load_model
 from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 #%% initialize dataset
-args = parse_args()
+args = parse_args(["ResNet50", "VGG16", "VGG19"])
 dataset = BoxCarsDataset(load_split="hard", load_atlas=True)
 
 #%% get optional path to load model
@@ -23,16 +25,29 @@ for path in [args.eval, args.resume]:
     if path is not None:
         print("Loading model from %s"%path)
         model = load_model(path)
+        print("Loaded model name: %s"%(model.name))
         break
 
 #%% construct the model as it was not passed as an argument
 if model is None:
-    print("Initializing new model...")
-    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224,224,3))
-    x = base_model.output
-    x = Flatten()(x)
+    print("Initializing new %s model ..."%args.train_net)
+    if args.train_net in ("ResNet50", ):
+        base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224,224,3))
+        x = Flatten()(base_model.output)
+        
+    if args.train_net in ("VGG16", "VGG19"):
+        if args.train_net == "VGG16":
+            base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3))
+        elif args.train_net == "VGG19":
+            base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3))
+        x = Flatten()(base_model.output)
+        x = Dense(4096, activation='relu', name='fc1')(x)
+        x = Dropout(0.5)(x)
+        x = Dense(4096, activation='relu', name='fc2')(x)
+        x = Dropout(0.5)(x)
+            
     predictions = Dense(dataset.get_number_of_classes(), activation='softmax')(x)
-    model = Model(input=base_model.input, output=predictions)
+    model = Model(input=base_model.input, output=predictions, name=args.train_net)
     optimizer = SGD(lr=LEARNING_RATE, decay=1e-4, nesterov=True)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy"])
 
