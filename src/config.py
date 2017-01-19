@@ -16,4 +16,3 @@ OUTPUT_DATA_DIR = "data"
 OUTPUT_TENSORBOARD_DIR = os.path.join(OUTPUT_DATA_DIR, "tensorboard")
 OUTPUT_SNAPSHOTS_DIR = os.path.join(OUTPUT_DATA_DIR, "snapshots")
 OUTPUT_FINAL_MODEL = os.path.join(OUTPUT_DATA_DIR, "final_model.h5")
-OUTPUT_FINAL_WEIGHTS = os.path.join(OUTPUT_DATA_DIR, "final_model_weights.h5")

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pickle
 import os
-from config import OUTPUT_FINAL_WEIGHTS
 import numpy as np
 
 #%%

@@ -46,11 +46,11 @@ if args.eval is None:
     generator_val = BoxCarsDataGenerator(dataset, "validation", BATCH_SIZE, training_mode=False)
 
 
-    #%% 
+    #%% callbacks
     ensure_dir(OUTPUT_TENSORBOARD_DIR)
     ensure_dir(OUTPUT_SNAPSHOTS_DIR)
     tb_callback = TensorBoard(OUTPUT_TENSORBOARD_DIR, histogram_freq=1, write_graph=False, write_images=False)
-    saver_callback = ModelCheckpoint(os.path.join(OUTPUT_SNAPSHOTS_DIR, "model_{epoch:03d}_{val_acc:.2f}.h5") )
+    saver_callback = ModelCheckpoint(os.path.join(OUTPUT_SNAPSHOTS_DIR, "model_{epoch:03d}_{val_acc:.2f}.h5"), period=4 )
 
     #%% get initial epoch
     initial_epoch = 0
@@ -60,7 +60,7 @@ if args.eval is None:
 
     model.fit_generator(generator=generator_train, 
                         samples_per_epoch=generator_train.N,
-                        nb_epoch=25,
+                        nb_epoch=20,
                         verbose=1,
                         validation_data=generator_val,
                         nb_val_samples=generator_val.N,
