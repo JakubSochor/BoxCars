@@ -34,6 +34,7 @@ if args.all:
 if len(download_nets) == 0:
     print("You need to specify nets to download or use --all to download all of them\nAVAILABLE NETS: %s\n"%(str(available_nets)))
     parser.print_usage()
+    sys.exit(1)
 
 #%%
 print("Saving downloaded models to: %s"%(args.output_dir))

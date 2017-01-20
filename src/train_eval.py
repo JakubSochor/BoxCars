@@ -5,6 +5,7 @@ from boxcars_dataset import BoxCarsDataset
 from boxcars_data_generator import BoxCarsDataGenerator
 from config import *
 from utils import ensure_dir, parse_args
+import time
 
 from keras.applications.resnet50 import ResNet50
 from keras.applications.vgg16 import VGG16
@@ -93,7 +94,10 @@ if args.eval is None:
 print("Running evaluation...")
 dataset.initialize_data("test")
 generator_test = BoxCarsDataGenerator(dataset, "test", BATCH_SIZE, training_mode=False, generate_y=False)
+start_time = time.time()
 predictions = model.predict_generator(generator_test, generator_test.N)
+end_time = time.time()
 single_acc, tracks_acc = dataset.evaluate(predictions)
-print("Accuracy: %.2f%%"%(single_acc*100))
-print("Track accuracy: %.2f%%"%(tracks_acc*100))
+print(" -- Accuracy: %.2f%%"%(single_acc*100))
+print(" -- Track accuracy: %.2f%%"%(tracks_acc*100))
+print(" -- Image processing time: %.1fms"%((end_time-start_time)/generator_test.N*1000))
