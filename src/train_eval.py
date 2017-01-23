@@ -75,11 +75,11 @@ if args.eval is None:
 
 
     model.fit_generator(generator=generator_train, 
-                        samples_per_epoch=generator_train.N,
+                        samples_per_epoch=generator_train.n,
                         nb_epoch=20,
                         verbose=1,
                         validation_data=generator_val,
-                        nb_val_samples=generator_val.N,
+                        nb_val_samples=generator_val.n,
                         callbacks=[tb_callback, saver_callback],
                         initial_epoch = initial_epoch,
                         )
@@ -95,9 +95,9 @@ print("Running evaluation...")
 dataset.initialize_data("test")
 generator_test = BoxCarsDataGenerator(dataset, "test", BATCH_SIZE, training_mode=False, generate_y=False)
 start_time = time.time()
-predictions = model.predict_generator(generator_test, generator_test.N)
+predictions = model.predict_generator(generator_test, generator_test.n)
 end_time = time.time()
 single_acc, tracks_acc = dataset.evaluate(predictions)
 print(" -- Accuracy: %.2f%%"%(single_acc*100))
 print(" -- Track accuracy: %.2f%%"%(tracks_acc*100))
-print(" -- Image processing time: %.1fms"%((end_time-start_time)/generator_test.N*1000))
+print(" -- Image processing time: %.1fms"%((end_time-start_time)/generator_test.n*1000))
