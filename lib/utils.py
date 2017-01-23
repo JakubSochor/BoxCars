@@ -2,6 +2,7 @@
 import pickle
 import os
 import numpy as np
+import sys
 
 #%%
 def load_cache(path, encoding="latin-1", fix_imports=True):
@@ -43,3 +44,12 @@ def parse_args(available_nets):
     return args
 
  
+#%%
+def download_report_hook(block_num, block_size, total_size):
+    downloaded = block_num*block_size
+    percents = downloaded / total_size * 100
+    show_str = " %.1f%%"%(percents)
+    sys.stdout.write(show_str + len(show_str)*"\b")
+    sys.stdout.flush()
+    if downloaded >= total_size:
+        print()

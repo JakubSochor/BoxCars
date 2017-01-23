@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import _init_paths
+
 import os
 
 from boxcars_dataset import BoxCarsDataset
