@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import _init_paths
+# this should be soon to prevent tensorflow initialization with -h parameter
+from utils import ensure_dir, parse_args
+args = parse_args(["ResNet50", "VGG16", "VGG19"])
 
+# other imports
 import os
+import time
 
 from boxcars_dataset import BoxCarsDataset
 from boxcars_data_generator import BoxCarsDataGenerator
-from config import *
-from utils import ensure_dir, parse_args
-import time
 
 from keras.applications.resnet50 import ResNet50
 from keras.applications.vgg16 import VGG16
@@ -19,7 +21,7 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 #%% initialize dataset
-args = parse_args(["ResNet50", "VGG16", "VGG19"])
+
 dataset = BoxCarsDataset(load_split="hard", load_atlas=True)
 
 #%% get optional path to load model
@@ -51,7 +53,7 @@ if model is None:
             
     predictions = Dense(dataset.get_number_of_classes(), activation='softmax')(x)
     model = Model(input=base_model.input, output=predictions, name=args.train_net)
-    optimizer = SGD(lr=LEARNING_RATE, decay=1e-4, nesterov=True)
+    optimizer = SGD(lr=args.lr, decay=1e-4, nesterov=True)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy"])
 
 #%% training
@@ -60,15 +62,15 @@ if args.eval is None:
     #%% initialize dataset for training
     dataset.initialize_data("train")
     dataset.initialize_data("validation")
-    generator_train = BoxCarsDataGenerator(dataset, "train", BATCH_SIZE, training_mode=True)
-    generator_val = BoxCarsDataGenerator(dataset, "validation", BATCH_SIZE, training_mode=False)
+    generator_train = BoxCarsDataGenerator(dataset, "train", args.batch_size, training_mode=True)
+    generator_val = BoxCarsDataGenerator(dataset, "validation", args.batch_size, training_mode=False)
 
 
     #%% callbacks
-    ensure_dir(OUTPUT_TENSORBOARD_DIR)
-    ensure_dir(OUTPUT_SNAPSHOTS_DIR)
-    tb_callback = TensorBoard(OUTPUT_TENSORBOARD_DIR, histogram_freq=1, write_graph=False, write_images=False)
-    saver_callback = ModelCheckpoint(os.path.join(OUTPUT_SNAPSHOTS_DIR, "model_{epoch:03d}_{val_acc:.2f}.h5"), period=4 )
+    ensure_dir(args.tensorboard_dir)
+    ensure_dir(args.snapshots_dir)
+    tb_callback = TensorBoard(args.tensorboard_dir, histogram_freq=1, write_graph=False, write_images=False)
+    saver_callback = ModelCheckpoint(os.path.join(args.snapshots_dir, "model_{epoch:03d}_{val_acc:.2f}.h5"), period=4 )
 
     #%% get initial epoch
     initial_epoch = 0
@@ -78,7 +80,7 @@ if args.eval is None:
 
     model.fit_generator(generator=generator_train, 
                         samples_per_epoch=generator_train.n,
-                        nb_epoch=20,
+                        nb_epoch=args.epochs,
                         verbose=1,
                         validation_data=generator_val,
                         nb_val_samples=generator_val.n,
@@ -87,15 +89,15 @@ if args.eval is None:
                         )
 
     #%% save trained data
-    print("Saving the final model to %s"%(OUTPUT_FINAL_MODEL))
-    ensure_dir(os.path.dirname(OUTPUT_FINAL_MODEL))
-    model.save(OUTPUT_FINAL_MODEL)
+    print("Saving the final model to %s"%(args.output_final_model_path))
+    ensure_dir(os.path.dirname(args.output_final_model_path))
+    model.save(args.output_final_model_path)
 
 
 #%% evaluate the model 
 print("Running evaluation...")
 dataset.initialize_data("test")
-generator_test = BoxCarsDataGenerator(dataset, "test", BATCH_SIZE, training_mode=False, generate_y=False)
+generator_test = BoxCarsDataGenerator(dataset, "test", args.batch_size, training_mode=False, generate_y=False)
 start_time = time.time()
 predictions = model.predict_generator(generator_test, generator_test.n)
 end_time = time.time()

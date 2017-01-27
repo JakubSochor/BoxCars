@@ -36,11 +36,21 @@ def parse_args(available_nets):
     parser.add_argument("--eval", type=str, default=None, help="path to model file to be evaluated")
     parser.add_argument("--resume", type=str, default=None, help="path to model file to be resumed")
     parser.add_argument("--train-net", type=str, default=available_nets[0], help="train on one of following nets: %s"%(str(available_nets)))
+    parser.add_argument("--batch-size", type=int, default=8, help="batch size")
+    parser.add_argument("--lr", type=int, default=0.0025, help="learning rate")
+    parser.add_argument("--epochs", type=int, default=15, help="run for epochs")
+    parser.add_argument("--cache", type=str, default="cache", help="where to store training meta-data and final model")
+    
     
     args = parser.parse_args()
     assert args.eval is None or args.resume is None, "--eval and --resume are mutually exclusive"
     if args.eval is None and args.resume is None:
         assert args.train_net in available_nets, "--train-net must be one of %s"%(str(available_nets))
+
+    args.output_final_model_path = os.path.join(args.cache, args.train_net, "final_model.h5")
+    args.snapshots_dir = os.path.join(args.cache, args.train_net, "snapshots")
+    args.tensorboard_dir = os.path.join(args.cache, args.train_net, "tensorboard")
+
     return args
 
  
