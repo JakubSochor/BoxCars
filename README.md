@@ -47,7 +47,7 @@ It is also possible to resume training using `--resume` argument for `train_eval
 ### Evaluation
 The model is evaluated when the training is finished, however it is possible to evaluate saved model by running:
 ```bash
-python3 scripts/train_eval.py path-to-model.h5
+python3 scripts/train_eval.py --eval path-to-model.h5
 ```
 
 
