@@ -2,7 +2,7 @@
 import _init_paths
 # this should be soon to prevent tensorflow initialization with -h parameter
 from utils import ensure_dir, parse_args
-args = parse_args(["ResNet50", "VGG16", "VGG19"])
+args = parse_args(["ResNet50", "VGG16", "VGG19", "InceptionV3"])
 
 # other imports
 import os
@@ -14,7 +14,8 @@ from boxcars_data_generator import BoxCarsDataGenerator
 from keras.applications.resnet50 import ResNet50
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg19 import VGG19
-from keras.layers import Dense, Flatten, Dropout
+from keras.applications.inception_v3 import InceptionV3
+from keras.layers import Dense, Flatten, Dropout, AveragePooling2D
 from keras.models import Model, load_model
 from keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint, TensorBoard
@@ -44,17 +45,27 @@ if model is None:
         if args.train_net == "VGG16":
             base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3))
         elif args.train_net == "VGG19":
-            base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3))
+            base_model = VGG19(weights='imagenet', include_top=False, input_shape=(224,224,3))
         x = Flatten()(base_model.output)
         x = Dense(4096, activation='relu', name='fc1')(x)
         x = Dropout(0.5)(x)
         x = Dense(4096, activation='relu', name='fc2')(x)
         x = Dropout(0.5)(x)
+
+    if args.train_net in ("InceptionV3", ):
+        base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=(224,224,3))
+        output_dim = int(base_model.outputs[0].get_shape()[1])
+        x = AveragePooling2D((output_dim, output_dim), strides=(output_dim, output_dim), name='avg_pool')(base_model.output)
+        x = Flatten()(x)
             
     predictions = Dense(dataset.get_number_of_classes(), activation='softmax')(x)
     model = Model(input=base_model.input, output=predictions, name=args.train_net)
     optimizer = SGD(lr=args.lr, decay=1e-4, nesterov=True)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy"])
+
+args.output_final_model_path = os.path.join(args.cache, model.name, "final_model.h5")
+args.snapshots_dir = os.path.join(args.cache, model.name, "snapshots")
+args.tensorboard_dir = os.path.join(args.cache, model.name, "tensorboard")
 
 #%% training
 if args.eval is None:
