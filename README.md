@@ -9,22 +9,28 @@ If you use the code, please cite our paper:
 ## Installation
 
 * Clone the repository and cd to it.
+
 ```bash
 git clone https://github.com/JakubSochor/BoxCars.git BoxCars
 cd BoxCars
 ```
 * (Optional, but recommended) Create virtual environment for this project - you can use **virtualenvwrapper** or following commands. **IMPORTANT NOTE:** this project is using **Python3**.
+
 ```bash
 virtuenv -p /usr/bin/python3 boxcars_venv
 source boxcars_venv/bin/activate
 ```
+
 * Install required packages 
+
 ```bash
 pip3 install -r requirements.txt 
 ```
+
 * Manually download dataset **TODO LINK** and unzip it.
 * Modify `scripts/config.py` and change `BOXCARS_DATASET_ROOT` to directory where is the unzipped dataset.
 * (Optional) Download trained models using `scripts/download_models.py`. To download all models to default location (`./models`) run following command (or use -h for help):
+
 ```base
 python3 scripts/download_models.py --all
 ``` 
