@@ -57,9 +57,10 @@ The processing time was measured on GTX1080 with CUDNN.
 
 Net | Single Accuracy | Track Accuracy | Image Processing Time
 ----|-----------------|----------------|----------------------
-ResNet50 |  83.13% |  90.72% | 5.8ms
-VGG16 | 83.84% | 92.23% | 5.4ms
-VGG19 | 83.91% |  91.99% | 5.4ms
+ResNet50 |  84.29% |  91.61% | 5.8ms
+VGG16 | 84.10% | 92.09% | 5.4ms
+VGG19 | 83.35% |  91.23% | 5.4ms
+InceptionV3 | 81.51% | 89.86% | 6.1ms
 
 
 ## Links 
