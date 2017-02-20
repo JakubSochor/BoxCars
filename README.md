@@ -63,6 +63,36 @@ VGG19 | 83.35% |  91.23% | 5.4ms
 InceptionV3 | 81.51% | 89.86% | 6.1ms
 
 
+## BoxCars116k dataset
+The dataset was created for the paper and it is possible to download it from **TODO LINK**.
+The dataset contains 116k of images of vehicles with fine-grained labels taken from surveillance cameras under various viewpoints. 
+See the paper **TODO NAME** for more statistics and information about dataset acquisition.
+The dataset contains tracked vehicles with the same label and multiple images per track. The track is uniquely identified by its id `vehicle_id`, while each image is uniquely identified by `vehicle_id` and `instance_id`. It is possible to use class `BoxCarsDataset` from `lib/boxcars_dataset.py` for working with the dataset; however, for convenience, we describe the structure of the dataset also here. 
+The dataset contains several files and folders:
+* **images** - dataset images and masks 
+* **atlas.pkl** - *BIG* structure with jpeg encoded images, which can be convenient as the whole structure fits the memory and it is possible to get the images on the fly. To load the atlas (or any other pkl file), you can use function `load_cache` from `lib/utils.py`. To decode the image (in RGB channel order), use the following statement.
+```python
+atlas = load_cache(path_to_atlas_file)
+image = cv2.cvtColor(cv2.imdecode(atlas[vehicle_id][instance_id], 1), cv2.COLOR_BGR2RGB)
+```
+
+* **dataset.pkl** - contains dictionary with following fields
+```
+cameras: information about used cameras (vanishing points, principal point)
+samples: list of vehicles (index correspons to vehicle id). 
+		 The structure contains several fields which should understandable. 
+		 It also contains field instances with list of of dictionaries 
+		 with information about images of the vehicle track. 
+		 The flag to_camera defines whether the vehicle is going towards camera or not. 
+```
+
+* **classification_splits.pkl** - different splits (*hard*, *medium* from paper and additional *body* and *make* split). Each split contains structure `types_mapping` definig mapping from textual labels to integer labels. It also contains fields `train`, `test`, and `validation` which are lists and each element contains tuple `(vehicle_id, class_id)`.
+
+* **verification_splits.pkl** - similar to classification splits; however, the elements in `train`, `test` are triplets `(vehicle_id1, `vehicle_id2`, class_id)`.
+
+* **json_data** and **matlab_data** - converted pkl file
+
+
 ## Links 
 * BoxCars116k dataset **TODO LINK**
 * Web with our [Traffic Research](https://medusa.fit.vutbr.cz/traffic/)

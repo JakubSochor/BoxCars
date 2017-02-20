@@ -45,6 +45,11 @@ class BoxCarsDataset(object):
         
     #%%
     def get_vehicle_instance_data(self, vehicle_id, instance_id, original_image_coordinates=False):
+        """
+        original_image_coordinates: the 3DBB coordinates are in the original image space
+                                    to convert them into cropped image space, it is necessary to subtract instance["3DBB_offset"]
+                                    which is done if this parameter is False. 
+        """
         vehicle = self.dataset["samples"][vehicle_id]
         instance = vehicle["instances"][instance_id]
         if not self.use_estimated_3DBB:
