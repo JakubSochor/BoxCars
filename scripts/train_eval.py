@@ -7,6 +7,7 @@ args = parse_args(["ResNet50", "VGG16", "VGG19", "InceptionV3"])
 # other imports
 import os
 import time
+import sys
 
 from boxcars_dataset import BoxCarsDataset
 from boxcars_data_generator import BoxCarsDataGenerator
@@ -22,8 +23,11 @@ from keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 #%% initialize dataset
-
-dataset = BoxCarsDataset(load_split="hard", load_atlas=True)
+if args.estimated_3DBB is None:
+    dataset = BoxCarsDataset(load_split="hard", load_atlas=True)
+else:
+    dataset = BoxCarsDataset(load_split="hard", load_atlas=True, 
+                             use_estimated_3DBB = True, estimated_3DBB_path = args.estimated_3DBB)
 
 #%% get optional path to load model
 model = None
@@ -31,7 +35,6 @@ for path in [args.eval, args.resume]:
     if path is not None:
         print("Loading model from %s"%path)
         model = load_model(path)
-        print("Loaded model name: %s"%(model.name))
         break
 
 #%% construct the model as it was not passed as an argument
@@ -59,9 +62,18 @@ if model is None:
         x = Flatten()(x)
             
     predictions = Dense(dataset.get_number_of_classes(), activation='softmax')(x)
-    model = Model(input=base_model.input, output=predictions, name=args.train_net)
+    model = Model(input=base_model.input, output=predictions, name="%s%s"%(args.train_net, {True: "_estimated3DBB", False:""}[args.estimated_3DBB is not None]))
     optimizer = SGD(lr=args.lr, decay=1e-4, nesterov=True)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=["accuracy"])
+
+
+print("Model name: %s"%(model.name))
+if args.estimated_3DBB is not None and "estimated3DBB" not in model.name:
+    print("ERROR: using estimated 3DBBs with model trained on original 3DBBs")
+    sys.exit(1)
+if args.estimated_3DBB is None and "estimated3DBB" in model.name:
+    print("ERROR: using model trained on estimated 3DBBs and running on original 3DBBs")
+    sys.exit(1)
 
 args.output_final_model_path = os.path.join(args.cache, model.name, "final_model.h5")
 args.snapshots_dir = os.path.join(args.cache, model.name, "snapshots")

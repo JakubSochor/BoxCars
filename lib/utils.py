@@ -41,6 +41,7 @@ def parse_args(available_nets):
     parser.add_argument("--lr", type=int, default=0.0025, help="learning rate")
     parser.add_argument("--epochs", type=int, default=20, help="run for epochs")
     parser.add_argument("--cache", type=str, default=default_cache, help="where to store training meta-data and final model")
+    parser.add_argument("--estimated-3DBB", type=str, default=None, help="use estimated 3DBBs from specified path")
     
     
     args = parser.parse_args()
