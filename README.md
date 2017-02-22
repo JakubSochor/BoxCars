@@ -53,14 +53,17 @@ python3 scripts/train_eval.py --eval path-to-model.h5
 
 ## Trained models
 We provide numerical results of models distributed with this code (use `scripts/download_models.py`). 
-The processing time was measured on GTX1080 with CUDNN.
+The processing time was measured on GTX1080 with CUDNN. The accuracy results are always shown as single image accuracy/whole track accuracy (in percents). 
+We have also evaluated the method with estimated 3D bounding boxes (see paper for details) and included the results here. 
+The estimated bounding boxes are in `data/estimated_3DBB.pkl`. In order to use the estimated bounding boxes, use `--estimated-3DBB path-to-pkl` argument for `train_eval.py` script.
+The models which were trained with the estimated bounding boxes have suffix `_estimated3DBB`.  
 
-Net | Single Accuracy | Track Accuracy | Image Processing Time
-----|-----------------|----------------|----------------------
-ResNet50 |  84.29% |  91.61% | 5.8ms
-VGG16 | 84.10% | 92.09% | 5.4ms
-VGG19 | 83.35% |  91.23% | 5.4ms
-InceptionV3 | 81.51% | 89.86% | 6.1ms
+Net | Original 3DBBs | Estimated 3DBBs | Image Processing Time
+----|---------------:|---------------:|---------------------:
+ResNet50 |  84.29/91.61 | 81.78/90.79  | 5.8ms
+VGG16 | 84.10/92.09 | 81.43/90.68 | 5.4ms
+VGG19 | 83.35/91.23 | 81.93/91.48  | 5.4ms
+InceptionV3 | 81.51/89.86 | 79.89/89.92 | 6.1ms
 
 
 ## BoxCars116k dataset
