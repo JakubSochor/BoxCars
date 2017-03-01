@@ -1,5 +1,5 @@
 # BoxCars Fine-Grained Recognition of Vehicles
-This is Keras+Tensorflow re-implementation of our method for fine-grained classification of vehicles decribed in **TODO NAME**.
+This is Keras+Tensorflow re-implementation of our method for fine-grained classification of vehicles decribed in **BoxCars: Improving Vehicle Fine-Grained Recognition using 3D Bounding Boxes in Traffic Surveillance**. **TODO ARXIV LINK**
 The numerical results are slightly different, but similar. This code is for **research only** purposes.
 If you use the code, please cite our paper:
 ```
@@ -27,7 +27,7 @@ source boxcars_venv/bin/activate
 pip3 install -r requirements.txt 
 ```
 
-* Manually download dataset **TODO LINK** and unzip it.
+* Manually download dataset https://medusa.fit.vutbr.cz/traffic/data/BoxCars116k.zip and unzip it.
 * Modify `scripts/config.py` and change `BOXCARS_DATASET_ROOT` to directory where is the unzipped dataset.
 * (Optional) Download trained models using `scripts/download_models.py`. To download all models to default location (`./models`) run following command (or use -h for help):
 
@@ -67,9 +67,9 @@ InceptionV3 | 81.51/89.86 | 79.89/89.92 | 6.1ms
 
 
 ## BoxCars116k dataset
-The dataset was created for the paper and it is possible to download it from **TODO LINK**.
+The dataset was created for the paper and it is possible to download it from our [website](https://medusa.fit.vutbr.cz/traffic/data/BoxCars116k.zip)
 The dataset contains 116k of images of vehicles with fine-grained labels taken from surveillance cameras under various viewpoints. 
-See the paper **TODO NAME** for more statistics and information about dataset acquisition.
+See the paper **BoxCars: Improving Vehicle Fine-Grained Recognition using 3D Bounding Boxes in Traffic Surveillance** **TODO ARXIV LINK** for more statistics and information about dataset acquisition.
 The dataset contains tracked vehicles with the same label and multiple images per track. The track is uniquely identified by its id `vehicle_id`, while each image is uniquely identified by `vehicle_id` and `instance_id`. It is possible to use class `BoxCarsDataset` from `lib/boxcars_dataset.py` for working with the dataset; however, for convenience, we describe the structure of the dataset also here. 
 The dataset contains several files and folders:
 * **images** - dataset images and masks 
@@ -97,5 +97,5 @@ samples: list of vehicles (index correspons to vehicle id).
 
 
 ## Links 
-* BoxCars116k dataset **TODO LINK**
+* [BoxCars116k dataset](https://medusa.fit.vutbr.cz/traffic/data/BoxCars116k.zip)
 * Web with our [Traffic Research](https://medusa.fit.vutbr.cz/traffic/)
