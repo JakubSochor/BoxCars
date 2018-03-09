@@ -1,13 +1,18 @@
 # BoxCars Fine-Grained Recognition of Vehicles
-This is Keras+Tensorflow re-implementation of our method for fine-grained classification of vehicles decribed in **BoxCars: Improving Vehicle Fine-Grained Recognition using 3D Bounding Boxes in Traffic Surveillance**. [arXiv version](https://arxiv.org/abs/1703.00686).
+This is Keras+Tensorflow re-implementation of our method for fine-grained classification of vehicles decribed in **BoxCars: Improving Vehicle Fine-Grained Recognition using 3D Bounding Boxes in Traffic Surveillance** ([link](https://doi.org/10.1109/TITS.2018.2799228).
 The numerical results are slightly different, but similar. This code is for **research only** purposes.
 If you use the code, please cite our paper:
 ```
-@misc{Sochor2017,
-Author = {Jakub Sochor and Jakub Špaňhel and Adam Herout},
-Title = {BoxCars: Improving Vehicle Fine-Grained Recognition using 3D Bounding Boxes in Traffic Surveillance},
-Year = {2017},
-Eprint = {arXiv:1703.00686},
+@ARTICLE{Sochor2018, 
+author={J. Sochor and J. Špaňhel and A. Herout}, 
+journal={IEEE Transactions on Intelligent Transportation Systems}, 
+title={BoxCars: Improving Fine-Grained Recognition of Vehicles Using 3-D Bounding Boxes in Traffic Surveillance}, 
+year={2018}, 
+volume={PP}, 
+number={99}, 
+pages={1-12}, 
+doi={10.1109/TITS.2018.2799228}, 
+ISSN={1524-9050}
 }
 ```
 
