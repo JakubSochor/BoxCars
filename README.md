@@ -107,5 +107,5 @@ samples: list of vehicles (index correspons to vehicle id).
 
 
 ## Links 
-* [BoxCars116k dataset](https://medusa.fit.vutbr.cz/traffic/data/BoxCars116k.zip)
+* [BoxCars116k dataset](https://medusa.fit.vutbr.cz/traffic/data/BoxCars116k.zip) ([backup location](https://drive.google.com/file/d/19LHLOmmVyUS1R4ypwByfrV8KQWnz2GDT/view?usp=sharing))
 * Web with our [Traffic Research](https://medusa.fit.vutbr.cz/traffic/)
