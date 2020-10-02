@@ -31,7 +31,7 @@ virtuenv -p /usr/bin/python3 boxcars_venv
 source boxcars_venv/bin/activate
 ```
 
-* Install required packages 
+* Install required packages:
 
 ```bash
 pip3 install -r requirements.txt 
@@ -89,7 +89,7 @@ atlas = load_cache(path_to_atlas_file)
 image = cv2.cvtColor(cv2.imdecode(atlas[vehicle_id][instance_id], 1), cv2.COLOR_BGR2RGB)
 ```
 
-* **dataset.pkl** - contains dictionary with following fields
+* **dataset.pkl** - contains dictionary with following fields:
 ```
 cameras: information about used cameras (vanishing points, principal point)
 samples: list of vehicles (index correspons to vehicle id). 
